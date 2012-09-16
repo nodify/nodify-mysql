@@ -1,0 +1,31 @@
+{
+  "name": "nodify-mysql",
+  "description": "Dirt simple DAO for mysql.",
+  "maintainers": [
+    {
+      "name": "Meadhbh Hamrick",
+      "email": "meadhbh@smithee.us",
+      "web": "http://nodify.us/"
+    }
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/nodify/nodify-mysql/raw/master/LICENSE"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/nodify/nodify-mysql"
+    }
+  ],
+  "dependencies": {
+    "mysql": "2.0.0-alpha3"
+  },     
+  "directories": [ "test", "example" ],
+  "version": "0.0.2",
+  "main": "./nodify-mysql.js",
+  "bin": { "nodify_load_db": "./bin/nodify_load_db" },
+  "keywords": [ "mysql", "data access", "dao" ]
+}
