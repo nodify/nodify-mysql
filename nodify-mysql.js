@@ -96,6 +96,16 @@
     	fields.push( current_field );
       }
 
+      if( data.created ) {
+        fields.push( 'created TIMESTAMP DEFAULT CURRENT_TIMESTAMP' );
+      } else if( data.updated ) {
+        fields.push( 'updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP' );
+      }
+
+      if( data.expires ) {
+        fields.push( "expires TIMESTAMP" );
+      }
+
       create += fields.join(',') + ")";
 
       that.do_query( create );
@@ -132,9 +142,19 @@
         }
       }
 
+      function _expires_clause( fields ) {
+        if( fields.expires ) {
+          return( " AND expires > '" + new Date( Date.now() ).toISOString() + "'");
+        } else {
+          return( '' );
+        }
+      }
+
       function _create_by_accessors ( name, fields ) {
         function _build_from_string ( name, item ) {
 	  var query = 'SELECT * FROM ' + name + ' WHERE ' + item + '=?';
+          query += _expires_clause( fields );
+
           return function ( id, complete ) {
     	    that.do_query( query, [id], complete );
 	  };
@@ -150,6 +170,8 @@
               query += ' AND ';
             }
           }
+
+          query += _expires_clause( fields );
 
           return function ( id, complete ) {
     	    that.do_query( query, id, complete );
@@ -189,6 +211,11 @@
     	    }
 
     	    keys = _populate_keys( source );
+            
+            if( fields.expires && ! source.expires ) {
+              keys.push( 'expires' );
+              source.expires = new Date( Date.now() + 86400000 );
+            }
 
     	    query = 'INSERT INTO ' + name + ' SET ' + keys.join( '=?,' ) + '=?';
 
@@ -205,6 +232,7 @@
     	that[ name + 'Read' ] = function ( id, complete ) {
 	  if( fields.key ) {
 	    var query = 'SELECT * FROM ' + name + ' WHERE ' + fields.key + '=?';
+            query += _expires_clause( fields );
     	    that.do_query( query, [id], _err( _final ) );
 	  } else {
 	    that.do_query( 'SELECT * FROM ' + name, [], _err( _final ) );
@@ -212,9 +240,9 @@
 
     	  function _final( err, data ) {
 	    if( data && ( data.length > 0 ) ) {
-    	      complete( err, data[0] );
+    	      complete( err, data );
 	    } else {
-	      complete( 'record not found', null );
+	      complete( err, [] );
 	    }
     	  }
     	};

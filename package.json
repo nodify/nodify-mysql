@@ -24,7 +24,7 @@
     "mysql": "2.0.0-alpha3"
   },     
   "directories": [ "test", "example" ],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "./nodify-mysql.js",
   "bin": { "nodify_load_db": "./bin/nodify_load_db" },
   "keywords": [ "mysql", "data access", "dao" ]
